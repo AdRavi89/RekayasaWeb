@@ -3,46 +3,36 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Makul;
 
 class MakulController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function showAll()
     {
-        //
+        return response()->json(Makul::all());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function showOne($id)
     {
-        //
+        return response()->json(Makul::find($id));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function create(Request $request)
     {
-        //
+        $makul = Makul::create($request->all());
+        return response()->json($makul, 201);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update($id, Request $request)
     {
-        //
+        $makul = Makul::findOrFail($id);
+        $makul->update($request->all());
+        return response()->json($makul, 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function delete($id)
     {
-        //
+        Makul::findOrFail($id)->delete();
+        return response('Deleted Successfully', 200);
     }
 }

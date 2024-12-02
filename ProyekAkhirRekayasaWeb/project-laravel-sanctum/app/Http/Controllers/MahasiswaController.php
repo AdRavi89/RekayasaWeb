@@ -3,66 +3,36 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Mahasiswa;
 
 class MahasiswaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function showAll()
     {
-        //
+        return response()->json(Mahasiswa::all());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function showOne($id)
     {
-                $validated = $request->validate([
-            'nama' => 'required',
-            'nim' => 'required|unique:mahasiswa',
-            'jurusan' => 'required',
-        ]);
-
-        $mahasiswa = Mahasiswa::create($validated);
-        return response()->json(['message' => 'Mahasiswa created', 'data' => $mahasiswa], 201);
-    
+        return response()->json(Mahasiswa::find($id));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function create(Request $request)
     {
-            $mahasiswa = Mahasiswa::all();
+        $mahasiswa = Mahasiswa::create($request->all());
+        return response()->json($mahasiswa, 201);
+    }
+
+    public function update($id, Request $request)
+    {
+        $mahasiswa = Mahasiswa::findOrFail($id);
+        $mahasiswa->update($request->all());
         return response()->json($mahasiswa, 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function delete($id)
     {
-     $mahasiswa = Mahasiswa::findOrFail($id);
-        $validated = $request->validate([
-            'nama' => 'sometimes|required',
-            'nim' => 'sometimes|required|unique:mahasiswa,nim,' . $id,
-            'jurusan' => 'sometimes|required',
-        ]);
-
-        $mahasiswa->update($validated);
-        return response()->json(['message' => 'Mahasiswa updated', 'data' => $mahasiswa], 200);
-    
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-         $mahasiswa = Mahasiswa::findOrFail($id);
-        $mahasiswa->delete();
-        return response()->json(['message' => 'Mahasiswa deleted'], 200);
+        Mahasiswa::findOrFail($id)->delete();
+        return response('Deleted Successfully', 200);
     }
 }
