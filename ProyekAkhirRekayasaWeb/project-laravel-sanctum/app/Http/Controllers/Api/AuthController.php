@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -15,20 +15,18 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            'email' => 'required|string|max:255|email|unique:users',
+            'password' => 'required|string|min:8'
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'errors' => $validator->errors(),
-            ], 422);
+            return response()->json(['errors' => $validator->errors()], 422);
         }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => Hash::make($request->password)
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -36,7 +34,7 @@ class AuthController extends Controller
         return response()->json([
             'data' => $user,
             'access_token' => $token,
-            'token_type' => 'Bearer',
+            'token_type' => 'Bearer'
         ], 201);
     }
 
@@ -46,7 +44,7 @@ class AuthController extends Controller
 
         if (!Auth::attempt($credentials)) {
             return response()->json([
-                'message' => 'Invalid login credentials',
+                'message' => 'Unauthorized'
             ], 401);
         }
 
@@ -56,24 +54,16 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Login success',
             'access_token' => $token,
-            'token_type' => 'Bearer',
+            'token_type' => 'Bearer'
         ], 200);
     }
 
     public function logout()
     {
-        $user = Auth::user();
-
-        if (!$user) {
-            return response()->json([
-                'message' => 'No user logged in',
-            ], 400);
-        }
-
-        $user->tokens()->delete();
+        Auth::user()->tokens()->delete();
 
         return response()->json([
-            'message' => 'Logout success',
+            'message' => 'Logout success'
         ], 200);
     }
 }

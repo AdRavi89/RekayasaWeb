@@ -4,7 +4,9 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\MakulController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -16,28 +18,43 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Authentication Routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+// Protected Routes (Require Authentication)
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', [AuthController::class, 'getUser']);
+    // User-related Routes
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::get('mahasiswa/read', [MahasiswaController::class, 'showAll']);
-    Route::get('mahasiswa/read/{id}', [MahasiswaController::class, 'showOne']);
-    Route::post('mahasiswa/create', [MahasiswaController::class, 'create']);
-    Route::put('mahasiswa/update/{id}', [MahasiswaController::class, 'update']);
-    Route::delete('mahasiswa/delete/{id}', [MahasiswaController::class, 'delete']);
+    // Mahasiswa CRUD Routes
+    Route::prefix('mahasiswa')->group(function () {
+        Route::get('/read', [MahasiswaController::class, 'showAll']);
+        Route::get('/read/{id}', [MahasiswaController::class, 'showOne']);
+        Route::post('/create', [MahasiswaController::class, 'create']);
+        Route::put('/update/{id}', [MahasiswaController::class, 'update']);
+        Route::delete('/delete/{id}', [MahasiswaController::class, 'delete']);
+    });
 
-    Route::get('dosen/read', [DosenController::class, 'showAll']);
-    Route::get('dosen/read/{id}', [DosenController::class, 'showOne']);
-    Route::post('dosen/create', [DosenController::class, 'create']);
-    Route::put('dosen/update/{id}', [DosenController::class, 'update']);
-    Route::delete('dosen/delete/{id}', [DosenController::class, 'delete']);
+    // Dosen CRUD Routes
+    Route::prefix('dosen')->group(function () {
+        Route::get('/read', [DosenController::class, 'showAll']);
+        Route::get('/read/{id}', [DosenController::class, 'showOne']);
+        Route::post('/create', [DosenController::class, 'create']);
+        Route::put('/update/{id}', [DosenController::class, 'update']);
+        Route::delete('/delete/{id}', [DosenController::class, 'delete']);
+    });
 
-    Route::get('makul/read', [MakulController::class, 'showAll']);
-    Route::get('makul/read/{id}', [MakulController::class, 'showOne']);
-    Route::post('makul/create', [MakulController::class, 'create']);
-    Route::put('makul/update/{id}', [MakulController::class, 'update']);
-    Route::delete('makul/delete/{id}', [MakulController::class, 'delete']);
+    // Makul CRUD Routes
+    Route::prefix('makul')->group(function () {
+        Route::get('/read', [MakulController::class, 'showAll']);
+        Route::get('/read/{id}', [MakulController::class, 'showOne']);
+        Route::post('/create', [MakulController::class, 'create']);
+        Route::put('/update/{id}', [MakulController::class, 'update']);
+        Route::delete('/delete/{id}', [MakulController::class, 'delete']);
+    });
 });
